@@ -15,25 +15,25 @@ class Program
         float ShrinkFactor = 1.3f;
         bool Sorted = false;
 
-        while(Sorted==false)
+        while (Sorted == false)
         {
             n = (int)Math.Floor(n / ShrinkFactor);
 
-            if(n<=1)
+            if (n <= 1)
             {
                 n = 1;
                 Sorted = true;
             }
             int i = 0;
-            while(i + n < Array.Length) 
+            while (i + n < Array.Length)
             {
-                if (Array[i].CompareTo(Array[i+n]) > 0)
+                if (Array[i].CompareTo(Array[i + n]) > 0)
                 {
-                    (Array[i], Array[i + n]) = (Array[i + n],Array[i]);
-                    Sorted= false;
+                    (Array[i], Array[i + n]) = (Array[i + n], Array[i]);
+                    Sorted = false;
                 }
 
-                i++;          
+                i++;
             }
         }
 
@@ -42,8 +42,8 @@ class Program
     static void ShellSort<T>(T[] Array) where T : IComparable<T>
     {
         int N = Array.Length;
-      
-        int Gap = N / 3;
+
+        int Gap = N / 2;
 
         while (Gap >= 1)
         {
@@ -61,12 +61,38 @@ class Program
                 Array[j] = Temp;
             }
 
-            Gap /= 3;
+            Gap /= 2;
         }
     }
 
+    static void QuickSort<T>(T[] Array, int LowerBound, int HigherBound) where T : IComparable<T>
+    {
+        int PivotIndex;
+        if (LowerBound < HigherBound)
+        {
+            PivotIndex = PARTITION(Array, LowerBound, HigherBound);
+            QuickSort(Array, LowerBound, PivotIndex - 1);
+            QuickSort(Array, PivotIndex + 1, HigherBound);
+        }
 
+    }
 
+    static int PARTITION<T>(T[] Array, int LowerBound, int HigherBound) where T : IComparable<T>
+    {
+        T Pivot = Array[HigherBound];
+
+        int i = LowerBound - 1;
+        for (int j = LowerBound; j <= HigherBound - 1; j++)
+        {
+            if (Array[j].CompareTo(Pivot) < 0)
+            {
+                i++;
+                (Array[i], Array[j]) = (Array[j], Array[i]);
+            }
+        }
+        (Array[i + 1], Array[HigherBound]) = (Array[HigherBound], Array[i + 1]);
+        return (i + 1);
+    }
 
     static void GenerateNumbers(int NumberAmount)
     {
@@ -158,33 +184,41 @@ class Program
             if (CheckArray(NumberArray) == false)
             {
                 Console.WriteLine("Sorted Incorrectly");
-
-                using (StreamWriter writer = new StreamWriter("output.txt"))
-                {
-                    foreach (int num in NumberArray)
-                    {
-                        writer.WriteLine(num);
-                    }
-                }
-
-                break;
             }
 
             Console.WriteLine("{0} integers Elapsed time: {1}", j * 8000, Stopwatch.Elapsed);
             j *= 2;
         }
-        
 
+        Console.WriteLine("\n QuickSort");
+        j = 1;
+        for (int i = 0; i < 5; i++)
+        {
+
+            GenerateNumbers(j * 8000);
+            ReadNumbersToArray();
+            Stopwatch.Restart();
+            QuickSort(NumberArray, 0, NumberArray.Length - 1);
+            Stopwatch.Stop();
+
+            if (CheckArray(NumberArray) == false)
+            {
+                Console.WriteLine("Sorted Incorrectly");
+            }
+
+            Console.WriteLine("{0} integers Elapsed time: {1}", j * 8000, Stopwatch.Elapsed);
+            j *= 2;
+        }
 
 
         //String Sorting
         Console.WriteLine();
         Console.WriteLine("\nCombSort  Strings");
-
+        j = 1;
         for (int i = 0; i < 5; i++)
         {
 
-            ReadStringsToArray((i + 1) * 4000);
+            ReadStringsToArray(j * 8000);
             Stopwatch.Restart();
 
             CombSort(StringArray);
@@ -195,16 +229,39 @@ class Program
                 Console.WriteLine("Sorted Incorrectly");
             }
 
-            Console.WriteLine("{0} Strings Elapsed time: {1}", (i + 1) * 4000, Stopwatch.Elapsed);
+            Console.WriteLine("{0} Strings Elapsed time: {1}", j * 8000, Stopwatch.Elapsed);
+            j *= 2;
+        }
+        Console.WriteLine();
+        Console.WriteLine("\nQuickSort  Strings");
+
+        j = 1;
+        for (int i = 0; i < 5; i++)
+        {
+
+            ReadStringsToArray(j * 8000);
+            Stopwatch.Restart();
+
+            QuickSort(StringArray, 0, StringArray.Length - 1);
+            Stopwatch.Stop();
+
+            if (CheckArray(StringArray) == false)
+            {
+                Console.WriteLine("Sorted Incorrectly");
+            }
+
+            Console.WriteLine("{0} Strings Elapsed time: {1}", j * 8000, Stopwatch.Elapsed);
+            j *= 2;
         }
 
         Console.WriteLine();
         Console.WriteLine("\nShellSort  Strings");
 
+        j = 1;
         for (int i = 0; i < 5; i++)
         {
 
-            ReadStringsToArray((i + 1) * 4000);
+            ReadStringsToArray(j * 8000);
             Stopwatch.Restart();
 
             ShellSort(StringArray);
@@ -215,7 +272,9 @@ class Program
                 Console.WriteLine("Sorted Incorrectly");
             }
 
-            Console.WriteLine("{0} Strings Elapsed time: {1}", (i + 1) * 4000, Stopwatch.Elapsed);
+            Console.WriteLine("{0} Strings Elapsed time: {1}", j * 8000, Stopwatch.Elapsed);
+            j *= 2;
         }
+
     }
 }
